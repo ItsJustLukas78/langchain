@@ -29,7 +29,7 @@ DELETE /users/{{id}}/cart to delete a user's cart
 User query: tell me a joke
 Plan: Sorry, this API's domain is shopping, not comedy.
 
-User query: I want to buy a couch
+Usery query: I want to buy a couch
 Plan: 1. GET /products with a query param to search for couches
 2. GET /user to find the user's id
 3. POST /users/{{id}}/cart to add a couch to the user's cart
@@ -122,18 +122,19 @@ Final Answer: the final output from executing the plan
 
 
 Example:
-User query: can you add some trendy stuff to my shopping cart.
+User query: My team's number is 5327S, can you find all the events we have attended?
 Thought: I should plan API calls first.
 Action: api_planner
-Action Input: I need to find the right API calls to add trendy items to the users shopping cart
-Observation: 1) GET /items with params 'trending' is 'True' to get trending item ids
-2) GET /user to get user
-3) POST /cart to post the trending items to the user's cart
+Action Input: I need to find the right API calls to find a team's id given a team number of '5327S' since I need the team id to find events.
+Observation: 1) GET /teams with params 'number' is '5327S' to get the team id
+2) GET /teams/{{id}}/events with id=93452 to get the events the team has attended
 Thought: I'm ready to execute the API calls.
 Action: api_controller
-Action Input: 1) GET /items params 'trending' is 'True' to get trending item ids
-2) GET /user to get user
-3) POST /cart to post the trending items to the user's cart
+Action Input: 1) GET /teams params 'number' is '5327S' to get team id
+2) GET /teams/{{id}}/events with id=93452 to get the events the team has attended
+
+Notice how the action input to api_controller includes the unformatted endpoint, with url parameters stated seperately (for example, if id=1234 then /users/{{id}}/cart should be kept /users/{{id}}/cart followed by the parameter id=1234 ).
+
 ...
 
 Begin!
@@ -145,7 +146,7 @@ Thought: I should generate a plan to help with this query and then copy that pla
 REQUESTS_GET_TOOL_DESCRIPTION = """Use this to GET content from a website.
 Input to the tool should be a json string with 3 keys: "url", "params" and "output_instructions".
 The value of "url" should be a string. 
-The value of "params" should be a dict of the needed and available parameters from the OpenAPI spec related to the endpoint. 
+The value of "params" should be a dict of the needed and available parameters from the OpenAPI spec related to the endpoint, keys are parameter names and values are parameter values.
 If parameters are not needed, or not available, leave it empty.
 The value of "output_instructions" should be instructions on what information to extract from the response, 
 for example the id(s) for a resource(s) that the GET request fetches.
